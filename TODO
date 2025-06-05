@@ -1,0 +1,55 @@
+✅ STEP-BY-STEP: Deploy Python Code to AWS Lambda via Console
+🔧 STEP 1: Prepare Your Python Code in VSCode
+Your project folder should look like this:
+cppCopyEditmy_lambda_project/
+├── lambda_function.py
+└── requirements.txt  (if using third-party packages)
+Your lambda_function.py must define a handler:
+pythonCopyEditdef lambda_handler(event, context):
+    return {
+        'statusCode': 200,
+        'body': 'Hello from Lambda!'    }
+📦 STEP 2: Create ZIP Deployment Package
+✅ Option A: If no external libraries
+Go to your project folder:
+Zip the Python file:
+✅ Option B: If using libraries like requests, pandas, etc.
+Create a folder package/
+Install libraries into it:
+Copy your Python code to package/
+Zip all contents inside package:
+🔄 Now you have function.zip — ready to upload.
+🌐 STEP 3: Login to AWS Console
+Visit https://console.aws.amazon.com/lambda
+Click "Create function"
+Choose:
+Author from scratch
+Function name: my-python-lambda
+Runtime: Python 3.11 (or your version)
+Permissions: Choose or create a role with AWSLambdaBasicExecutionRole
+Click Create function
+☁️ STEP 4: Upload Your Code
+After function is created, scroll down to Code section
+Click Upload from → .zip file
+Upload your function.zip from local machine
+Click Save
+🧪 STEP 5: Test Your Lambda
+Click Test
+Configure a test event (or leave default JSON)
+Click Test
+Check the Execution result below for output
+📄 STEP 6: Set the Correct Handler (Important!)
+Under the Runtime settings, confirm that:
+🛠️ STEP 7: (Optional) Attach a Trigger
+To invoke your function via:
+API Gateway → to expose as a REST endpoint
+S3 / CloudWatch Events / DynamoDB → for event-driven architecture
+Click Add Trigger and select the appropriate service.
+iniCopyEditHandler = lambda_function.lambda_handler
+bashCopyEditcd package
+zip -r ../function.zip .cd ..
+bashCopyEditcp lambda_function.py package/
+bashCopyEditpip install -r requirements.txt -t package/
+bashCopyEditzip function.zip lambda_function.py
+bashCopyEditcd my_lambda_project
+ 
