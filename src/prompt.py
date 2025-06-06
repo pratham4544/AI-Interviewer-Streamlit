@@ -99,3 +99,85 @@ Generate a follow-up question that encourages the candidate to elaborate on thei
 
 Ensure the follow-up question is clear, engaging, and directly related to the candidate's answer without adding any extra commentary.
 '''
+
+
+code_executor_prompt = '''
+Act as a Python compiler. I will provide you with a programming problem and its Python code. You will simulate execution and respond **only** with the exact terminal output or error message produced by the code, as if it were run in a Python interpreter. Do **not** include explanations, summaries, or extra text. Only show the raw output as it would appear in the terminal.
+
+When I give you a problem {problem} and its code {context}, respond strictly with the output.
+
+# ------------------------
+# Example 1
+problem: Write code to add two integers using user input.
+
+code:
+a = int(input())
+b = int(input())
+print(a + b)
+
+# Input:
+# 5
+# 7
+
+# Output:
+12
+
+# ------------------------
+# Example 2
+problem: Write a function count_vowels(s) that takes a string s and returns the number of vowels (a, e, i, o, u, case-insensitive) in the string.
+
+code:
+def count_vowels(s):
+    vowels = "aeiouAEIOU"
+    count = 0
+    for char in s:
+        if char in vowels:
+            count += 1
+    return count
+
+print(count_vowels("Hello World"))
+
+# Output:
+3
+
+# ------------------------
+# Example 3
+problem: Print the square of numbers from 1 to 5 using a for loop.
+
+code:
+for i in range(1, 6):
+    print(i ** 2)
+
+# Output:
+1
+4
+9
+16
+25
+
+# ------------------------
+# Example 4
+problem: Show what happens if you try to divide a number by zero.
+
+code:
+a = 10
+b = 0
+print(a / b)
+
+# Output:
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+ZeroDivisionError: division by zero
+
+# ------------------------
+# Example 5
+problem: Try to import a module that doesn't exist to show the import error.
+
+code:
+import notamodule
+
+# Output:
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'notamodule'
+'''

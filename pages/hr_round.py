@@ -43,13 +43,15 @@ with col1:
         st.success("✅ Interview completed!")
         collection.insert_one(st.session_state.interview_data)
         st.json(st.session_state.interview_data)
+        if st.button('Start Interview'):
+            st.switch_page("pages/sys_arch_round.py")
         
-        avg_score, length_scores, total_scores = get_candidate_average_score(candidate_id)
-        if avg_score >= 6:
-            st.success(f'Congratualtions! You Score {avg_score} Get Ready for Next Step of Interview From Total Score {length_scores}')
-            st.balloons()
+        # avg_score, length_scores, total_scores = get_candidate_average_score(candidate_id)
+        # if avg_score >= 6:
+        #     st.success(f'Congratualtions! You Score {avg_score} Get Ready for Next Step of Interview From Total Score {length_scores}')
+        #     st.balloons()
         
-        st.stop()
+        # st.stop()
 
 with col2:
     st.subheader("🧑 Candidate")
@@ -116,3 +118,6 @@ with col2:
             st.session_state.question_index += 1
             st.session_state.step = "main"
             st.rerun()
+            
+            
+

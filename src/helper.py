@@ -21,18 +21,22 @@ import time
 import subprocess
 load_dotenv()
 import random
+from euriai import EuriaiLangChainLLM
 from src.prompt import *
 
 
 # read api key through .env
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
+api_key = os.getenv('EURON_API_KEY')
 
 
 # intialtize the LLM models
-client = Groq(api_key=GROQ_API_KEY)
-llm = ChatGroq(model="llama-3.1-8b-instant",temperature=0)
+# client = Groq(api_key=GROQ_API_KEY)
+# llm = ChatGroq(model="llama-3.1-8b-instant",temperature=0)
+llm = EuriaiLangChainLLM(api_key=api_key,model="gpt-4.1-nano")
 
+print(llm.invoke("Write a poem about time travel."))
 
 # 1. Preprocessing Steps
 
@@ -251,7 +255,7 @@ def generate_follow_up_question(question, answer, prompt = followup_questions_pr
     prompt_template = prompt
     prompt = PromptTemplate(template=prompt_template, input_variables=['question', 'answer'])
     response = (prompt | llm).invoke({'question': question, 'answer': answer})
-    return response.content
+    return response
 
 def convert_wav_to_mp3(wav_path, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
@@ -282,3 +286,10 @@ def get_candidate_average_score(candidate_id):
         return  avg_score, length_scores*10, total_scores
     else:
         return None
+
+
+def code_executor(code,problem, prompt=code_executor_prompt):
+    prompt_template = prompt
+    prompt = PromptTemplate(template=prompt_template, input_variables=['context','problem'])
+    response = (prompt | llm).invoke({'context': code, 'problem':problem})
+    return response.content
