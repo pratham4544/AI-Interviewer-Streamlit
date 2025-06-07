@@ -292,4 +292,4 @@ def code_executor(code,problem, prompt=code_executor_prompt):
     prompt_template = prompt
     prompt = PromptTemplate(template=prompt_template, input_variables=['context','problem'])
     response = (prompt | llm).invoke({'context': code, 'problem':problem})
-    return response.content
+    return response

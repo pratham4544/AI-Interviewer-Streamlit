@@ -43,8 +43,10 @@ with col1:
         st.success("✅ Interview completed!")
         collection.insert_one(st.session_state.interview_data)
         st.json(st.session_state.interview_data)
-        if st.button('Start Interview'):
-            st.switch_page("pages/sys_arch_round.py")
+        if st.button('Start Coding Round'):
+            # Ensure candidate_id persists in session state
+            st.session_state.candidate_id = candidate_id
+            st.switch_page("pages/py_coding_round.py")
         
         # avg_score, length_scores, total_scores = get_candidate_average_score(candidate_id)
         # if avg_score >= 6:
@@ -61,23 +63,36 @@ with col2:
     # Main question input
     if st.session_state.step == "main":
         answer_text = st.text_area("Type your answer here:", key=f"answer_{st.session_state.question_index}")
-        if st.button("Submit Answer"):
-            evaluation = evaluate_answer(current_question, answer_text)
-            st.session_state.latest_interaction = {
-                "question": current_question,
-                "answer": answer_text,
-                "score": evaluation["evaluation"]["score"],
-                "feedback": evaluation["evaluation"]["feedback"]
-            }
+        
+        # Create two columns for buttons
+        button_col1, button_col2 = st.columns(2)
+        
+        with button_col1:
+            if st.button("Submit Answer"):
+                evaluation = evaluate_answer(current_question, answer_text)
+                st.session_state.latest_interaction = {
+                    "question": current_question,
+                    "answer": answer_text,
+                    "score": evaluation["evaluation"]["score"],
+                    "feedback": evaluation["evaluation"]["feedback"]
+                }
+                st.session_state.evaluation_score = evaluation["evaluation"]["score"]
+                if evaluation["evaluation"]["score"] < 6:
+                    st.session_state.f1 = generate_follow_up_question(current_question, answer_text)
+                    st.session_state.step = "followup1"
+                else:
+                    st.session_state.interview_data["interactions"].append(st.session_state.latest_interaction)
+                    st.session_state.question_index += 1
+                    st.rerun()
 
-            st.session_state.evaluation_score = evaluation["evaluation"]["score"]
-            if evaluation["evaluation"]["score"] < 6:
-                st.session_state.f1 = generate_follow_up_question(current_question, answer_text)
-                st.session_state.step = "followup1"
-            else:
-                st.session_state.interview_data["interactions"].append(st.session_state.latest_interaction)
-                st.session_state.question_index += 1
-                st.rerun()
+        with button_col2:
+            if st.button("Next Round ➡️"):
+                # Save interview data
+                collection.insert_one(st.session_state.interview_data)
+                # Maintain candidate_id in session state
+                st.session_state.candidate_id = candidate_id
+                # Navigate to Python coding round
+                st.switch_page("pages/py_coding_round.py")
 
     # Follow-up 1
     elif st.session_state.step == "followup1":
@@ -118,6 +133,6 @@ with col2:
             st.session_state.question_index += 1
             st.session_state.step = "main"
             st.rerun()
-            
-            
+
+
 
